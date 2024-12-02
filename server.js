@@ -7,31 +7,26 @@ const PORT = 3000;
 
 const allowedOrigins = ['http://localhost', 'https://test34343-6tz.pages.dev'];
 
-// CORS middleware with dynamic origin checking
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like Postman) or if origin is in the whitelist
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
-    } else {}
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   }
 }));
 
-app.use(express.static('public')); // Serve static frontend files
-
 const API_URL = 'https://mobile-riv.api.belgianrail.be/api/v1.0/dacs';
 const API_KEY = 'IOS-v0001-20190214-YKNDlEPxDqynCovC2ciUOYl8L6aMwU4WuhKaNtxl';
-const STATION_UIC_CODE = '8822004'; // Replace with desired station UIC Code
-const COUNT = 30;
+const STATION_UIC_CODE = '8833134';
 
-// Endpoint to fetch and parse departure data
 app.get('/api/departures', async (req, res) => {
   try {
-    const response = await axios.get(`${API_URL}?query=DeparturesApp&UicCode=${STATION_UIC_CODE}&Count=${COUNT}`, {
+    const response = await axios.get(`${API_URL}?query=DeparturesApp&UicCode=${STATION_UIC_CODE}`, {
       headers: { 'x-api-key': API_KEY },
     });
 
-    // Extract and format the relevant data
     const departures = response.data.entries.map(entry => ({
       TrainNumber: entry.TrainNumber,
       CommercialType: entry.CommercialType,
@@ -39,7 +34,8 @@ app.get('/api/departures', async (req, res) => {
       Platform: entry.Platform || 'N/A',
       DestinationNl: entry.DestinationNl,
       Delay: entry.DepartureDelay ? entry.DepartureDelay.slice(3, 5) + ' min' : 'On time', // Format delay in minutes
-      IsDelayed: !!entry.DepartureDelay, // Boolean to indicate delay
+      IsDelayed: !!entry.DepartureDelay,
+      IsAtPlatform: entry.DepartureStatusNl === 'aan perron', // True if train is at platform
     }));
 
     res.json(departures);
