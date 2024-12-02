@@ -22,11 +22,12 @@ app.use(express.static('public')); // Serve static frontend files
 const API_URL = 'https://mobile-riv.api.belgianrail.be/api/v1.0/dacs';
 const API_KEY = 'IOS-v0001-20190214-YKNDlEPxDqynCovC2ciUOYl8L6aMwU4WuhKaNtxl';
 const STATION_UIC_CODE = '8822004'; // Replace with desired station UIC Code
+const COUNT = 30;
 
 // Endpoint to fetch and parse departure data
 app.get('/api/departures', async (req, res) => {
   try {
-    const response = await axios.get(`${API_URL}?query=DeparturesApp&UicCode=${STATION_UIC_CODE}`, {
+    const response = await axios.get(`${API_URL}?query=DeparturesApp&UicCode=${STATION_UIC_CODE}&Count={COUNT}`, {
       headers: { 'x-api-key': API_KEY },
     });
 
