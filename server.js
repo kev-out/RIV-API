@@ -27,7 +27,7 @@ const COUNT = 30;
 // Endpoint to fetch and parse departure data
 app.get('/api/departures', async (req, res) => {
   try {
-    const response = await axios.get(`${API_URL}?query=DeparturesApp&UicCode=${STATION_UIC_CODE}&Count={COUNT}`, {
+    const response = await axios.get(`${API_URL}?query=DeparturesApp&UicCode=${STATION_UIC_CODE}&Count=${COUNT}`, {
       headers: { 'x-api-key': API_KEY },
     });
 
